@@ -66,7 +66,7 @@ function FormSubmitComponent({ formUrl, content }: { content: FormElementInstanc
   if (submitted) {
     return (
       <div className="flex justify-center w-full h-full items-center p-8">
-        <div className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-blue-700 rounded">
+        <div className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-grey-400 rounded">
           <h1 className="text-2xl font-bold">Formulário enviado!</h1>
           <p className="text-muted-foreground">Obrigado por enviar o formulário! Agora você pode fechar esta janela!</p>
         </div>
@@ -78,7 +78,7 @@ function FormSubmitComponent({ formUrl, content }: { content: FormElementInstanc
     <div className="flex justify-center w-full h-full items-center p-8">
       <div
         key={renderKey}
-        className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-blue-700 rounded"
+        className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-grey-400 rounded"
       >
         {content.map((element) => {
           const FormElement = FormElements[element.type].formComponent;

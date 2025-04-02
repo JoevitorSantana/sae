@@ -19,8 +19,8 @@ import { Checkbox } from "../ui/checkbox";
 const type: ElementsType = "CheckboxField";
 
 const extraAttributes = {
-  label: "Checkbox field",
-  helperText: "Helper text",
+  label: "Checkbox",
+  helperText: "Texto de Ajuda",
   required: false,
 };
 
@@ -39,7 +39,7 @@ export const CheckboxFieldFormElement: FormElement = {
   }),
   designerBtnElement: {
     icon: IoMdCheckbox,
-    label: "CheckBox Field",
+    label: "CheckBox",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
@@ -184,7 +184,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                 />
               </FormControl>
               <FormDescription>
-                The label of the field. <br /> It will be displayed above the field
+                Label do campo. <br /> será mostrado acima do campo.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -195,7 +195,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           name="helperText"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Helper text</FormLabel>
+              <FormLabel>Texto de Ajuda</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -205,8 +205,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                 />
               </FormControl>
               <FormDescription>
-                The helper text of the field. <br />
-                It will be displayed below the field.
+                texto de ajuda do campo. <br />
+                será exibida abaixo do campo.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -218,10 +218,10 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           render={({ field }) => (
             <FormItem className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="space-y-0.5">
-                <FormLabel>Required</FormLabel>
+                <FormLabel>Obrigatório</FormLabel>
                 <FormDescription>
-                  The helper text of the field. <br />
-                  It will be displayed below the field.
+                  texto de ajuda do campo. <br />
+                  será exibida abaixo do campo.
                 </FormDescription>
               </div>
               <FormControl>

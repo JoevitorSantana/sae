@@ -2,7 +2,9 @@
 
 import prisma from "@/lib/prisma";
 import { formSchema, formSchemaType } from "@/schemes/form";
-import { currentUser } from "@clerk/nextjs/server"
+import { User, userSchemaType } from "@/schemes/user";
+import { currentUser, SessionJSON, UserJSON } from "@clerk/nextjs/server"
+import { isErrored } from "stream";
 
 class UserNotFoundErr extends Error {}
 
@@ -15,7 +17,7 @@ export async function GetFormStats() {
 
     const stats = await prisma.form.aggregate({
         where: {
-            userId: user.id,
+            // userId: user.id,
         },
         _sum: {
             visits: true,
@@ -76,7 +78,14 @@ export async function GetForms() {
   
     return await prisma.form.findMany({
       where: {
-        userId: user.id,
+        OR: [
+          {
+            status: 0,
+          }, 
+          {
+            status: 1,
+          },
+        ],
       },
       orderBy: {
         createdAt: "desc",
@@ -92,7 +101,7 @@ export async function GetFormById(id: number) {
 
     return await prisma.form.findUnique({
         where: {
-            userId: user.id,
+            // userId: user.id,
             id,
         },
     });
@@ -133,8 +142,19 @@ export async function PublishForm(id: number) {
     });
 }
 
-export async function GetFormContentByUrl(formUrl: string) {
-    return await prisma.form.update({
+export async function DeleteForm(id: number) {
+  return await prisma.form.update({
+    data: {
+      status: -1,
+    },
+    where: {
+      id,
+    },
+  });
+}
+
+export async function GetFormContentByUrl(formUrl: string, id_clerk: string) {
+    const form = await prisma.form.update({
         select: {
           content: true,
         },
@@ -147,9 +167,36 @@ export async function GetFormContentByUrl(formUrl: string) {
           shareURL: formUrl,
         },
     });
+
+    if (form) {
+      const formView = await prisma.form.findUnique({
+          where: {
+            shareURL: formUrl,
+          },
+      });
+
+      if (formView) {
+        const isAnswered = await prisma.formSubmissions.findFirst({
+            where: {
+              userId: id_clerk,
+              formId: formView?.id,
+            },
+        });
+
+        if (isAnswered)
+            return "answered";
+      }
+    }
+
+    return form;
 }
 
 export async function SubmitForm(formUrl: string, content: string) {
+    const user = await currentUser();
+    if (!user) {
+      throw new UserNotFoundErr();
+    }
+
     return await prisma.form.update({
       data: {
         submissions: {
@@ -158,6 +205,7 @@ export async function SubmitForm(formUrl: string, content: string) {
         FormSubmissions: {
           create: {
             content,
+            userId: user.id,
           },
         },
       },
@@ -176,11 +224,65 @@ export async function GetFormWithSubmissions(id: number) {
   
     return await prisma.form.findUnique({
       where: {
-        userId: user.id,
+        // userId: user.id,
         id,
       },
       include: {
         FormSubmissions: true,
       },
     });
+}
+
+export async function GetMyForms() {
+    const user = await currentUser();
+    if (!user) {
+      throw new UserNotFoundErr();
+    }
+
+    return await prisma.formSubmissions.findMany({
+        where: {
+          userId: user.id,
+        }, 
+        include: {
+          form: true,
+        }
+    });
+}
+
+export async function VerifyIfUsersExists(id_clerk: string) {
+  return await prisma.user.findFirst({
+    where: {
+      id_clerk: id_clerk,
+    },
+  })
+}
+
+export async function CreateUser(user: UserJSON) {
+  const newUser = await prisma.user.create({
+    data: {
+      id_clerk: user.id,
+      name: user.first_name,
+      lastName: user.last_name,
+    }
+  });
+
+  if (!newUser) {
+    throw new Error("Something went wrong");
+  }
+}
+
+export async function CreateUserByLogin(user: SessionJSON) {
+  const loggedUser = currentUser();
+  console.log(user);
+  // const newUser = await prisma.user.create({
+  //   data: {
+  //     id_clerk: user.id,
+  //     name: loggedUser.first_name,
+  //     lastName: user.last_name,
+  //   }
+  // });
+
+  // if (!newUser) {
+  //   throw new Error("Something went wrong");
+  // }
 }

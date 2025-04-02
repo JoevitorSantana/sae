@@ -35,7 +35,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
 function DesignerComponent({ elementInstance }: { elementInstance: FormElementInstance }) {
     return (
       <div className="flex flex-col gap-2 w-full">
-        <Label className="text-muted-foreground">Title field</Label>
+        <Label className="text-muted-foreground">Campo Título</Label>
         <Separator />
       </div>
     );

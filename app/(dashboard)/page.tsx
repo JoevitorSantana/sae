@@ -1,4 +1,4 @@
-import { GetFormStats, GetForms } from "@/actions/form";
+import { GetFormStats, GetForms, GetMyForms } from "@/actions/form";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ReactNode, Suspense } from "react";
@@ -9,33 +9,65 @@ import { TbArrowBounce } from "react-icons/tb";
 import { Separator } from "@/components/ui/separator";
 import CreateFormBtn from "@/components/CreateFormBtn";
 import { Badge } from "@/components/ui/badge";
-import { formatDistance } from "date-fns";
+import { format, formatDistance, intlFormatDistance } from "date-fns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { FaEdit } from "react-icons/fa";
 import { Form } from "@prisma/client";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ElementsType, FormElementInstance } from "@/components/FormElements";
+import { Checkbox } from "@radix-ui/react-checkbox";
+import { ptBR } from 'date-fns/locale'
+
+type Row = { [key: string]: string } & {
+  submittedAt: Date;
+};
 
 export default function Home() {
+
+  const { userId, sessionClaims } = auth();
+
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  const userRole = sessionClaims?.metadata.role;
+
   return (
-    <div className="container pt-4">
-      <Suspense fallback={<StatsCards loading={true} />}>
-        <CardStatsWrapper />
-      </Suspense>
-      <Separator className="my-6" />
-      <h2 className="text-4xl font-bold col-span-2">Seus Formulários</h2>
-      <Separator className="my-6" />
-      <div className="grid gric-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <CreateFormBtn />
-        <Suspense
-          fallback={[1, 2, 3, 4].map((el) => (
-            <FormCardSkeleton key={el} />
-          ))}
-        >
-          <FormCards />
-        </Suspense>
-      </div>
-    </div>
+    <>
+      {userRole == "admin" ? (
+        <div className="container pt-4 pb-20">
+          <Suspense fallback={<StatsCards loading={true} />}>
+            <CardStatsWrapper />
+          </Suspense>
+          <Separator className="my-6" />
+            <h2 className="text-4xl font-bold col-span-2">Seus Formulários</h2>
+          <Separator className="my-6" />
+          <div className="grid gric-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <CreateFormBtn />
+            <Suspense
+              fallback={[1, 2, 3, 4].map((el) => (
+                <FormCardSkeleton key={el} />
+              ))}
+            >
+              <FormCards />
+            </Suspense>
+          </div>
+        </div>
+      ) : (
+        <div className="container pt-4 pb-20">
+          <Separator className="my-6" />
+            <h2 className="text-4xl font-bold col-span-2">Formulários Respondidos</h2>
+          <Separator className="my-6" />
+          <div className="rounded-md border">
+            <UserSubmissionsTable />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -150,13 +182,14 @@ function FormCard({ form }: { form: Form }) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 justify-between">
-          <span className="truncate font-bold">{form.name}</span>
+          <span className="truncate text-wrap font-bold">{form.name}</span>
           {form.published && <Badge>Publicado</Badge>}
           {!form.published && <Badge variant={"destructive"}>Rascunho</Badge>}
         </CardTitle>
         <CardDescription className="flex items-center justify-between text-muted-foreground text-sm">
           {formatDistance(form.createdAt, new Date(), {
             addSuffix: true,
+            locale: ptBR
           })}
           {form.published && (
             <span className="flex items-center gap-2">
@@ -169,7 +202,7 @@ function FormCard({ form }: { form: Form }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="h-[20px] truncate text-sm text-muted-foreground">
-        {form.description || "No description"}
+        {form.description || "Sem descrição"}
       </CardContent>
       <CardFooter>
         {form.published && (
@@ -189,4 +222,82 @@ function FormCard({ form }: { form: Form }) {
       </CardFooter>
     </Card>
   );
+}
+
+async function UserSubmissionsTable () {
+  const submissions = await GetMyForms();
+
+  const columns: {
+      id: string;
+      label: string;
+      required: boolean;
+      type: ElementsType;
+  }[] = [];
+
+  const rows: Row[] = [];
+  
+  submissions.forEach((submission) => {
+    const content = JSON.parse(submission.content);
+    rows.push({
+      ...content,
+      form: submission.form,
+      submittedAt: submission.createdAt,
+    });
+  });
+
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nome</TableHead>
+            <TableHead className="text-muted-foreground text-right uppercase">Enviado em</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.length > 0 ? (
+            <>
+              {rows.map((row, index) => (
+                <TableRow key={index}>
+                  <RowCell key={index} type="TextField" value={row.form.name} />
+                  <TableCell className="text-muted-foreground text-right">
+                    {formatDistance(row.submittedAt, new Date(), {
+                      addSuffix: true,
+                      locale: ptBR, 
+                    })}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          ) : (
+            <>
+              <TableRow>
+                  <TableCell>
+                    Você ainda não respondeu nenhum formulário!
+                  </TableCell>
+                </TableRow>
+            </>
+          )}
+        </TableBody>
+      </Table>
+    </>
+  );
+}
+
+function RowCell({ type, value }: { type: ElementsType; value: string }) {
+  let node: ReactNode = value;
+
+  switch (type) {
+    case "DateField":
+      if (!value) break;
+      const date = new Date(value);
+      node = <Badge variant={"outline"}>{format(date, "dd/MM/yyyy")}</Badge>;
+      break;
+    case "CheckboxField":
+      const checked = value === "true";
+      node = <Checkbox checked={checked} disabled />;
+      break;
+  }
+
+  return <TableCell>{node}</TableCell>;
 }

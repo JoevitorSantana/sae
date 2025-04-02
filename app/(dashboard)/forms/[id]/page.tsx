@@ -13,6 +13,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format, formatDistance } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { BsArrowLeft } from "react-icons/bs";
 
 async function FormDetailPage({
   params,
@@ -23,6 +27,7 @@ async function FormDetailPage({
 }) {
   const { id } = params;
   const form = await GetFormById(Number(id));
+  
   if (!form) {
     throw new Error("form not found");
   }
@@ -39,6 +44,14 @@ async function FormDetailPage({
 
   return (
     <>
+      <div className="flex px-5 py-5 justify-between">
+          <Button variant={"link"} asChild>
+              <Link href={"/"} className="gap-2">
+                  <BsArrowLeft />
+                  Voltar à Home
+              </Link>
+          </Button>
+      </div>
       <div className="py-10 border-b border-muted">
         <div className="flex justify-between container">
           <h1 className="text-4xl font-bold truncate">{form.name}</h1>
@@ -79,15 +92,15 @@ async function FormDetailPage({
         />
 
         <StatsCard
-          title="Bounce rate"
+          title="Taxa de rejeição"
           icon={<TbArrowBounce className="text-red-600" />}
-          helperText="Visits that leaves without interacting"
+          helperText="Visitas que saíram sem interagir"
           value={submissionRate.toLocaleString() + "%" || ""}
           loading={false}
           className="shadow-md shadow-red-600"
         />
       </div>
-      <div className="container pt-10">
+      <div className="container py-10 pb-20">
         <SubmissionsTable id={form.id} />
       </div>
     </>
@@ -159,7 +172,7 @@ async function SubmissionsTable({ id }: { id: number }) {
                   {column.label}
                 </TableHead>
               ))}
-              <TableHead className="text-muted-foreground text-right uppercase">Submitted at</TableHead>
+              <TableHead className="text-muted-foreground text-right uppercase">Enviado em</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -171,6 +184,7 @@ async function SubmissionsTable({ id }: { id: number }) {
                 <TableCell className="text-muted-foreground text-right">
                   {formatDistance(row.submittedAt, new Date(), {
                     addSuffix: true,
+                    locale: ptBR
                   })}
                 </TableCell>
               </TableRow>

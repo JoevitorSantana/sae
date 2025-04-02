@@ -1,6 +1,5 @@
 import Logo from "@/components/Logo";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
-import { UserButton } from "@clerk/nextjs";
 import React, { ReactNode } from "react"
 
 function Layout({ children }: { children: ReactNode }) {

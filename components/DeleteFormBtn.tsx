@@ -1,4 +1,4 @@
-import { MdOutlinePublish } from "react-icons/md";
+import { MdDeleteOutline, MdOutlinePublish } from "react-icons/md";
 import { Button } from "./ui/button";
 
 import {
@@ -16,20 +16,20 @@ import { useTransition } from "react";
 import { toast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 import { FaSpinner } from "react-icons/fa";
-import { PublishForm } from "@/actions/form";
+import { DeleteForm } from "@/actions/form";
 
-function PublishFormBtn({id}: {id: number}) {
+function DeleteFormBtn({id}: {id: number}) {
     const [loading, startTransition] = useTransition();
     const router = useRouter();
 
-    async function publishForm() {
+    async function deleteForm() {
         try {
-          await PublishForm(id);
+          await DeleteForm(id);
           toast({
             title: "Successo",
-            description: "Seu formulário agora está disponível para o público!",
+            description: "Seu formulário excluído com sucesso!",
           });
-          router.refresh();
+          router.push('/');
         } catch (error) {
           toast({
             title: "Erro",
@@ -41,32 +41,28 @@ function PublishFormBtn({id}: {id: number}) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="gap-2 text-white bg-gradient-to-r from-green-900 to-green-400">
-                    <MdOutlinePublish className="h-4 w-4" />
-                    Publicar
+                <Button variant={"destructive"} className="gap-2">
+                    <MdDeleteOutline className="h-4 w-4" />
+                    Excluir
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                 <AlertDialogDescription>
-                Essa ação não pode ser refeita! Após a publicação você não poderá editar o formulário. <br />
-                <br />
-                <span className="font-medium">
-                    Publicando este formulário, você irá disponibilizá-lo ao público para coletar respostas.
-                </span>
+                Essa ação não pode ser refeita! Após a exclusão você não poderá editar o formulário. <br />
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
-                disabled={loading}
-                onClick={(e) => {
-                    e.preventDefault();
-                    startTransition(publishForm);
-                }}
+                    disabled={loading}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        startTransition(deleteForm);
+                    }}
                 >
-                Confirmar {loading && <FaSpinner className="animate-spin" />}
+                    Excluir {loading && <FaSpinner className="animate-spin" />}
                 </AlertDialogAction>
             </AlertDialogFooter>
             </AlertDialogContent>
@@ -74,4 +70,4 @@ function PublishFormBtn({id}: {id: number}) {
     );
 }
 
-export default PublishFormBtn;
+export default DeleteFormBtn;

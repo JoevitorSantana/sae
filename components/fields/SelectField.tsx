@@ -22,10 +22,10 @@ import { toast } from "../ui/use-toast";
 const type: ElementsType = "SelectField";
 
 const extraAttributes = {
-  label: "Select field",
-  helperText: "Helper text",
+  label: "Campo de seleção",
+  helperText: "Texto de ajuda...",
   required: false,
-  placeHolder: "Value here...",
+  placeHolder: "Valor aqui...",
   options: [],
 };
 
@@ -46,7 +46,7 @@ export const SelectFieldFormElement: FormElement = {
   }),
   designerBtnElement: {
     icon: RxDropdownMenu,
-    label: "Select Field",
+    label: "Campo de seleção",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
@@ -172,8 +172,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
     });
 
     toast({
-      title: "Success",
-      description: "Properties saved successfully",
+      title: "Sucesso",
+      description: "Propriedades salvas sucesso!",
     });
 
     setSelectedElement(null);
@@ -197,7 +197,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                 />
               </FormControl>
               <FormDescription>
-                The label of the field. <br /> It will be displayed above the field
+                texto de ajuda do campo. <br />
+                será exibida abaixo do campo.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -217,7 +218,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                   }}
                 />
               </FormControl>
-              <FormDescription>The placeholder of the field.</FormDescription>
+              <FormDescription>placeholder do campo.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -227,7 +228,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           name="helperText"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Helper text</FormLabel>
+              <FormLabel>Texto de Ajuda</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -237,8 +238,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                 />
               </FormControl>
               <FormDescription>
-                The helper text of the field. <br />
-                It will be displayed below the field.
+                texto de ajuda do campo. <br />
+                será exibida abaixo do campo.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -251,17 +252,17 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           render={({ field }) => (
             <FormItem>
               <div className="flex justify-between items-center">
-                <FormLabel>Options</FormLabel>
+                <FormLabel>Opções</FormLabel>
                 <Button
                   variant={"outline"}
                   className="gap-2"
                   onClick={(e) => {
                     e.preventDefault(); // avoid submit
-                    form.setValue("options", field.value.concat("New option"));
+                    form.setValue("options", field.value.concat("Nova opção"));
                   }}
                 >
                   <AiOutlinePlus />
-                  Add
+                  Novo
                 </Button>
               </div>
               <div className="flex flex-col gap-2">
@@ -292,8 +293,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
               </div>
 
               <FormDescription>
-                The helper text of the field. <br />
-                It will be displayed below the field.
+                texto de ajuda do campo. <br />
+                será exibida abaixo do campo.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -306,10 +307,10 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           render={({ field }) => (
             <FormItem className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="space-y-0.5">
-                <FormLabel>Required</FormLabel>
+                <FormLabel>Obrigatório</FormLabel>
                 <FormDescription>
-                  The helper text of the field. <br />
-                  It will be displayed below the field.
+                  texto de ajuda do campo. <br />
+                  será exibida abaixo do campo.
                 </FormDescription>
               </div>
               <FormControl>
@@ -321,7 +322,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
         />
         <Separator />
         <Button className="w-full" type="submit">
-          Save
+          Salvar
         </Button>
       </form>
     </Form>

@@ -115,7 +115,7 @@ function DesignerComponent({ elementInstance }: { elementInstance: FormElementIn
     const { title } = element.extraAttributes;
     return (
       <div className="flex flex-col gap-2 w-full">
-        <Label className="text-muted-foreground">Title field</Label>
+        <Label className="text-muted-foreground">Campo Título</Label>
         <p className="text-xl">{title}</p>
       </div>
     );

@@ -4,9 +4,11 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { DesktopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { MdSettings } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 function ThemeSwitcher() {
-
+    const router = useRouter();
     const {theme, setTheme} = useTheme();
     const [mounted, setMounted] = useState(false);
 
@@ -26,6 +28,9 @@ function ThemeSwitcher() {
                 </TabsTrigger>
                 <TabsTrigger value="system" onClick={() => setTheme("system")}>
                     <DesktopIcon className="h-[1.2rem] w-[1.2rem]" />
+                </TabsTrigger>
+                <TabsTrigger value="" onClick={() => router.push('/profile')}>
+                    <MdSettings className="h-[1.2rem] w-[1.2rem]" />
                 </TabsTrigger>
             </TabsList>
         </Tabs>

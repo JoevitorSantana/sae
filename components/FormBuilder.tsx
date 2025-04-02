@@ -16,6 +16,7 @@ import { toast } from "./ui/use-toast";
 import Link from "next/link";
 import { BsArrowBarRight, BsArrowLeft } from "react-icons/bs";
 import Confetti from "react-confetti";
+import DeleteFormBtn from "./DeleteFormBtn";
 
 function FormBuilder({ form }: { form: Form }) {
 
@@ -109,20 +110,27 @@ function FormBuilder({ form }: { form: Form }) {
             <main className="flex flex-col w-full">
                 <nav className="flex justify-between border-b-2 p-4 gap-3 items-center">
                     <h2 className="truncate font-medium">
-                        <span className="text-muted-foreground mr-2">Formlário:</span>
+                        <span className="text-muted-foreground mr-2">Formulário:</span>
                         {form.name}
                     </h2>
                     <div className="flex items-center gap-2">
                         <PreviewDialogBtn />
                         {!form.published && (
                         <>
+                            <DeleteFormBtn id={form.id} />
                             <SaveFormBtn id={form.id} />
                             <PublishFormBtn id={form.id} />
+                            <Button asChild>
+                              <Link href={"/"}>
+                                <BsArrowLeft />
+                                Voltar à Home
+                              </Link>
+                            </Button>
                         </>
                         )}
                     </div>
                 </nav>
-                <div className="flex w-full flex-grow items-center justify-center relative overflow-y-auto h-[200px] bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]">
+                <div className="flex w-full flex-grow items-center justify-center relative overflow-y-auto h-[200px] bg-accent">
                 <Designer />
                 </div>
             </main>

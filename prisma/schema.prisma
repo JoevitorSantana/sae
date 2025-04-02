@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -28,6 +29,7 @@ model Form {
 
   shareURL        String            @unique @default(uuid())
   FormSubmissions FormSubmissions[]
+  status      Int @default(1)
 
   @@unique([name, userId])
 }
@@ -37,6 +39,42 @@ model FormSubmissions {
   createdAt DateTime @default(now())
   formId    Int
   form      Form     @relation(fields: [formId], references: [id])
+  userId    String
 
   content String
+}
+
+model User {
+  id        Int  @id @default(autoincrement())
+  id_clerk  String?
+  name      String?
+  lastName  String?
+  email     String? @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  address   String?
+  phone     String?
+  courses     UserCourses[]  @relation("StudentCourses")
+  teaching    UserCourses[]  @relation("TeacherCourses")
+}
+
+model Course {
+  id        Int  @id @default(autoincrement())
+  courseName    String
+  courseAbbr    String
+  userCourses   UserCourses[]
+}
+
+model UserCourses {
+  id          Int @id @default(autoincrement())
+  userId      Int
+  courseId    Int
+  teacherId   Int
+  finishDate  DateTime?
+
+  user        User    @relation("StudentCourses", fields: [userId], references: [id])
+  course      Course  @relation(fields: [courseId], references: [id])
+  teacher     User    @relation("TeacherCourses", fields: [teacherId], references: [id])
+
+  @@unique([userId, courseId])
 }
