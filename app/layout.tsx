@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "SAE",
-  description: "Sistema de Avaliação de Egressos",
+  description: "Sistema de Acompanhamento de Egressos",
 };
 
 export default function RootLayout({
