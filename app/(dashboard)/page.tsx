@@ -23,6 +23,9 @@ import { Checkbox } from "@radix-ui/react-checkbox";
 import { ptBR } from 'date-fns/locale'
 
 type Row = { [key: string]: string } & {
+  form?: {
+    name?: string;
+  };
   submittedAt: Date;
 };
 
@@ -259,7 +262,7 @@ async function UserSubmissionsTable () {
             <>
               {rows.map((row, index) => (
                 <TableRow key={index}>
-                  <RowCell key={index} type="TextField" value={row.form.name} />
+                  <RowCell key={index} type="TextField" value={row.form?.name || ""} />
                   <TableCell className="text-muted-foreground text-right">
                     {formatDistance(row.submittedAt, new Date(), {
                       addSuffix: true,
